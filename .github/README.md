@@ -77,6 +77,52 @@ Go to **Actions** → **Databricks CI/CD Pipeline** → **Run workflow** to depl
 - Deploys bundle to the `prod` target environment
 - Optionally runs job after deployment
 
+## Using Parameter-Controlled Deployments
+
+### How to Trigger Manual Deployments
+
+1. Go to your repository on GitHub
+2. Click the **Actions** tab
+3. Select **Databricks CI/CD Pipeline** from the workflows list
+4. Click **Run workflow** button (top right)
+5. Choose your parameters:
+   - **Branch**: Select the branch to deploy from
+   - **Target environment**: Choose `dev`, `prod`, or `both`
+   - **Run tests**: Toggle test execution
+   - **Run job after deploy**: Toggle job execution after deployment
+
+### Common Use Cases
+
+#### 🚀 **Quick Dev Deployment (skip tests)**
+- Environment: `dev`
+- Run tests: `false`
+- Run job after deploy: `true`
+- *Use case*: Fast iteration during development
+
+#### 🔄 **Full Production Deployment**
+- Environment: `prod`  
+- Run tests: `true`
+- Run job after deploy: `false`
+- *Use case*: Controlled production release with full validation
+
+#### 📋 **Deploy to Both Environments**
+- Environment: `both`
+- Run tests: `true`
+- Run job after deploy: `true`
+- *Use case*: Promote from dev to prod in one workflow
+
+#### 🧪 **Testing Only**
+- Don't use manual deployment, just push to a feature branch
+- *Use case*: Validate changes without deploying
+
+### Benefits of Parameter Control
+
+- **Flexibility**: Deploy to any environment from any branch
+- **Speed**: Skip tests for rapid development cycles
+- **Testing**: Control job execution after deployment
+- **Safety**: Manual approval still required for production
+- **Efficiency**: Deploy to multiple environments in one go
+
 ## Setting Up Production Environment Protection
 
 For production deployments, it's recommended to set up environment protection rules:
