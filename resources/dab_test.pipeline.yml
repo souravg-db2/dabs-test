@@ -1,0 +1,13 @@
+# The main pipeline for dab_test
+resources:
+  pipelines:
+    dab_test_pipeline:
+      name: dab_test_pipeline
+      catalog: dbacademy
+      schema: dab_test_${bundle.target}
+      libraries:
+        - notebook:
+            path: ../src/dlt_pipeline.ipynb
+
+      configuration:
+        bundle.sourcePath: ${workspace.file_path}/src
