@@ -93,7 +93,7 @@ jobs:
       env:
         DATABRICKS_AUTH_TYPE: github-oidc
         DATABRICKS_HOST: https://adb-2115782714327793.13.azuredatabricks.net/
-        DATABRICKS_CLIENT_ID: 6132403b-699e-4a03-acd0-a1fa21703d4e
+        DATABRICKS_CLIENT_ID: 3c2f0c96-251d-4b3e-8037-75a9264f1e16
 
   deploy-dev:
     name: Deploy to Dev
@@ -128,7 +128,7 @@ jobs:
       env:
         DATABRICKS_AUTH_TYPE: github-oidc
         DATABRICKS_HOST: https://adb-2115782714327793.13.azuredatabricks.net/
-        DATABRICKS_CLIENT_ID: 6132403b-699e-4a03-acd0-a1fa21703d4e
+        DATABRICKS_CLIENT_ID: 3c2f0c96-251d-4b3e-8037-75a9264f1e16
         
     # - name: Run Dev Job (Optional)
     #   if: github.event.inputs.run_job_after_deploy == 'true'
