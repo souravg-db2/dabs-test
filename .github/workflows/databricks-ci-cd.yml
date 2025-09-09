@@ -144,14 +144,27 @@ jobs:
       run: |
         curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
         echo "$HOME/.databricks/bin" >> $GITHUB_PATH
-        
+
+    - name: Azure OIDC Login
+      uses: azure/login@v2
+      with:
+        client-id: 6132403b-699e-4a03-acd0-a1fa21703d4e
+        tenant-id: bf465dc7-3bc8-4944-b018-092572b5c20d
+        subscription-id: edd4cc45-85c7-4aec-8bf5-648062d519bf
+
+    - name: Configure Databricks auth
+      run: |
+        export DATABRICKS_CLIENT_ID=6132403b-699e-4a03-acd0-a1fa21703d4e
+        export DATABRICKS_TENANT_ID=bf465dc7-3bc8-4944-b018-092572b5c20d
+        export DATABRICKS_HOST="https://adb-2115782714327793.13.azuredatabricks.net"
+    
     - name: Deploy to Dev Environment
       run: |
         databricks bundle deploy --target dev
-      env:
-        DATABRICKS_AUTH_TYPE: github-oidc
-        DATABRICKS_HOST: https://adb-2115782714327793.13.azuredatabricks.net/
-        DATABRICKS_CLIENT_ID: 3c2f0c96-251d-4b3e-8037-75a9264f1e16
+      # env:
+      #   DATABRICKS_AUTH_TYPE: github-oidc
+      #   DATABRICKS_HOST: https://adb-2115782714327793.13.azuredatabricks.net/
+      #   DATABRICKS_CLIENT_ID: 3c2f0c96-251d-4b3e-8037-75a9264f1e16
         
     # - name: Run Dev Job (Optional)
     #   if: github.event.inputs.run_job_after_deploy == 'true'
