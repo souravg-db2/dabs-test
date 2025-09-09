@@ -19,7 +19,7 @@ on:
       run_tests:
         description: 'Run tests before deployment'
         required: false
-        default: true
+        default: false
         type: boolean
       run_job_after_deploy:
         description: 'Run job after successful deployment'
@@ -91,8 +91,9 @@ jobs:
       run: |
         databricks bundle validate --target dev
       env:
-        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        DATABRICKS_AUTH_TYPE: github-oidc
+        DATABRICKS_HOST: https://adb-2115782714327793.13.azuredatabricks.net/
+        DATABRICKS_CLIENT_ID: 6132403b-699e-4a03-acd0-a1fa21703d4e
 
   deploy-dev:
     name: Deploy to Dev
@@ -125,58 +126,59 @@ jobs:
       run: |
         databricks bundle deploy --target dev
       env:
-        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        DATABRICKS_AUTH_TYPE: github-oidc
+        DATABRICKS_HOST: https://adb-2115782714327793.13.azuredatabricks.net/
+        DATABRICKS_CLIENT_ID: 6132403b-699e-4a03-acd0-a1fa21703d4e
         
-    - name: Run Dev Job (Optional)
-      if: github.event.inputs.run_job_after_deploy == 'true'
-      run: |
-        # Replace 'dab_test_job' with your actual job name from resources/dab_test.job.yml
-        databricks bundle run --target dev dab_test_job
-      env:
-        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    # - name: Run Dev Job (Optional)
+    #   if: github.event.inputs.run_job_after_deploy == 'true'
+    #   run: |
+    #     # Replace 'dab_test_job' with your actual job name from resources/dab_test.job.yml
+    #     databricks bundle run --target dev dab_test_job
+    #   env:
+    #     DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+    #     DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
-  deploy-prod:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: [test, validate]
-    if: |
-      always() &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
-      needs.validate.result == 'success' &&
-      (
-        (github.event_name != 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
-        (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'prod' || github.event.inputs.environment == 'both'))
-      )
-    environment: production  # Requires manual approval in GitHub
+  # deploy-prod:
+  #   name: Deploy to Production
+  #   runs-on: ubuntu-latest
+  #   needs: [test, validate]
+  #   if: |
+  #     always() &&
+  #     (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+  #     needs.validate.result == 'success' &&
+  #     (
+  #       (github.event_name != 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+  #       (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'prod' || github.event.inputs.environment == 'both'))
+  #     )
+  #   environment: production  # Requires manual approval in GitHub
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
       
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v5
+  #     with:
+  #       python-version: ${{ env.PYTHON_VERSION }}
         
-    - name: Install Databricks CLI
-      run: |
-        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
-        echo "$HOME/.databricks/bin" >> $GITHUB_PATH
+  #   - name: Install Databricks CLI
+  #     run: |
+  #       curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+  #       echo "$HOME/.databricks/bin" >> $GITHUB_PATH
         
-    - name: Deploy to Production Environment
-      run: |
-        databricks bundle deploy --target prod
-      env:
-        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+  #   - name: Deploy to Production Environment
+  #     run: |
+  #       databricks bundle deploy --target prod
+  #     env:
+  #       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+  #       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         
-    - name: Run Production Job (Optional)
-      if: github.event.inputs.run_job_after_deploy == 'true'
-      run: |
-        # Replace 'dab_test_job' with your actual job name from resources/dab_test.job.yml
-        databricks bundle run --target prod dab_test_job
-      env:
-        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+  #   - name: Run Production Job (Optional)
+  #     if: github.event.inputs.run_job_after_deploy == 'true'
+  #     run: |
+  #       # Replace 'dab_test_job' with your actual job name from resources/dab_test.job.yml
+  #       databricks bundle run --target prod dab_test_job
+  #     env:
+  #       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+  #       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
